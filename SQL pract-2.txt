@@ -1,0 +1,466 @@
+1️⃣ Display employees whose salary is less than 40000.
+
+2️⃣ Display employees who joined after 2022-01-01.
+
+3️⃣ Display employees from HR or IT department.
+
+4️⃣ Display employees whose salary is NOT equal to 50000.
+
+5️⃣ Display employees whose department is NULL.
+
+6️⃣ Display employees whose name starts with letter A.
+
+7️⃣ Display employees whose name ends with n.
+
+8️⃣ Display employees whose name contains ra anywhere.
+
+9️⃣ Increase salary by 10% for all employees in IT department.
+
+🔟 Update department to Management where emp_id = 3.
+
+1️⃣1️⃣ Set salary = 30000 where salary is NULL.
+
+1️⃣2️⃣ Delete employees whose salary is less than 25000.
+
+1️⃣3️⃣ Delete employees from HR department.
+
+1️⃣4️⃣ Display top 3 highest paid employees.
+
+1️⃣5️⃣ Find:
+
+Total number of employees
+
+Average salary
+
+Maximum salary
+
+Minimum salary
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Output of queries
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Microsoft Windows [Version 10.0.19045.6466]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\xampp\mysql\bin>mysql.exe -u root
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 8
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> use company_db;
+Database changed
+MariaDB [company_db]> show table
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 1
+MariaDB [company_db]> show tables;
++----------------------+
+| Tables_in_company_db |
++----------------------+
+| employee             |
++----------------------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> show index in employee;
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| employee |          0 | PRIMARY  |            1 | eid         | A         |           5 |     NULL | NULL   |      | BTREE      |         |               |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+1 row in set (0.053 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary < 40000;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   1 | Sandesh | 25000.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|   3 | Haresh  | 12000.00 | Sales     | 2026-02-19 |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+6 rows in set (0.000 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where d_date > 2022-01-01;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   1 | Sandesh | 25000.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|   3 | Haresh  | 12000.00 | Sales     | 2026-02-19 |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+6 rows in set, 1 warning (0.000 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where d_date > 2026-01-01;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   1 | Sandesh | 25000.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|   3 | Haresh  | 12000.00 | Sales     | 2026-02-19 |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+6 rows in set, 1 warning (0.000 sec)
+
+MariaDB [company_db]> show warnings
+    -> ;
++---------+------+--------------------------------------------+
+| Level   | Code | Message                                    |
++---------+------+--------------------------------------------+
+| Warning | 1292 | Truncated incorrect datetime value: '2024' |
++---------+------+--------------------------------------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where d_date > "2026-01-01";
++-----+--------+----------+-----------+------------+
+| eid | name   | salary   | dept_name | d_date     |
++-----+--------+----------+-----------+------------+
+|   3 | Haresh | 12000.00 | Sales     | 2026-02-19 |
++-----+--------+----------+-----------+------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where dept_name in ('hr','it');
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   1 | Sandesh | 25000.00 | IT        | 2025-02-12 |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+4 rows in set (0.000 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary != 50000;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   1 | Sandesh | 25000.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|   3 | Haresh  | 12000.00 | Sales     | 2026-02-19 |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+6 rows in set (0.000 sec)
+
+MariaDB [company_db]> select * from emploee
+    -> ;
+ERROR 1146 (42S02): Table 'company_db.emploee' doesn't exist
+MariaDB [company_db]> select * from employee
+    -> where dept_name is null;
+Empty set (0.000 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where dept_name is not null;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   1 | Sandesh | 25000.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|   3 | Haresh  | 12000.00 | Sales     | 2026-02-19 |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+6 rows in set (0.000 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where name like 's%';
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   1 | Sandesh | 25000.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+4 rows in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where name like '%y';
++-----+-------+----------+-----------+------------+
+| eid | name  | salary   | dept_name | d_date     |
++-----+-------+----------+-----------+------------+
+|   2 | Sammy | 25000.00 | Admin     | 2025-02-12 |
++-----+-------+----------+-----------+------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where name like '%ra%';
++-----+--------+----------+-----------+------------+
+| eid | name   | salary   | dept_name | d_date     |
++-----+--------+----------+-----------+------------+
+|  20 | Ramesh | 28000.00 | HR        | 2025-02-12 |
++-----+--------+----------+-----------+------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where name like '%a%y%';
++-----+-------+----------+-----------+------------+
+| eid | name  | salary   | dept_name | d_date     |
++-----+-------+----------+-----------+------------+
+|   2 | Sammy | 25000.00 | Admin     | 2025-02-12 |
++-----+-------+----------+-----------+------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> update emplyee
+    -> set salary = salary + salary * 0.1
+    -> where dept_name = 'it';
+ERROR 1146 (42S02): Table 'company_db.emplyee' doesn't exist
+MariaDB [company_db]> update employee
+    -> set
+    -> salary = salary + salary * 0.1
+    -> where sept_name = 'it';
+ERROR 1054 (42S22): Unknown column 'sept_name' in 'where clause'
+MariaDB [company_db]> update employee
+    -> set salary = salary + salary * 0.1
+    -> where dept_name = 'it';
+Query OK, 1 row affected (0.004 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   1 | Sandesh | 27500.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|   3 | Haresh  | 12000.00 | Sales     | 2026-02-19 |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+6 rows in set (0.000 sec)
+
+MariaDB [company_db]> update employee
+    -> set dept_name = 'manager'
+    -> where eid = 3;
+Query OK, 1 row affected (0.006 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   1 | Sandesh | 27500.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|   3 | Haresh  | 12000.00 | manager   | 2026-02-19 |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+6 rows in set (0.000 sec)
+
+MariaDB [company_db]> insert into employee
+    -> (name,dept_name) values ('varad','HR');
+Query OK, 1 row affected, 1 warning (0.006 sec)
+
+MariaDB [company_db]> select * from employee;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   0 | varad   |     NULL | HR        | NULL       |
+|   1 | Sandesh | 27500.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|   3 | Haresh  | 12000.00 | manager   | 2026-02-19 |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+7 rows in set (0.001 sec)
+
+MariaDB [company_db]> update employee
+    -> set salary = 30000
+    -> where salary = null;
+Query OK, 0 rows affected (0.000 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+MariaDB [company_db]> update employee
+    -> set salary = 30000
+    -> where salary is null;
+Query OK, 1 row affected (0.006 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   0 | varad   | 30000.00 | HR        | NULL       |
+|   1 | Sandesh | 27500.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|   3 | Haresh  | 12000.00 | manager   | 2026-02-19 |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> show create table employee;
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                              |
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| employee | CREATE TABLE `employee` (
+  `eid` int(11) NOT NULL,
+  `name` varchar(20) DEFAULT NULL,
+  `salary` float(7,2) DEFAULT NULL,
+  `dept_name` varchar(20) DEFAULT NULL,
+  `d_date` date DEFAULT NULL,
+  PRIMARY KEY (`eid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci |
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> desc employee;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| eid       | int(11)     | NO   | PRI | NULL    |       |
+| name      | varchar(20) | YES  |     | NULL    |       |
+| salary    | float(7,2)  | YES  |     | NULL    |       |
+| dept_name | varchar(20) | YES  |     | NULL    |       |
+| d_date    | date        | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+5 rows in set (0.025 sec)
+
+MariaDB [company_db]> alter table employee
+    -> modify column eid int auto_increment;
+ERROR 1062 (23000): ALTER TABLE causes auto_increment resequencing, resulting in duplicate entry '1' for key 'PRIMARY'
+MariaDB [company_db]> update employee
+    -> set eid = 5
+    -> where eid = 0;
+Query OK, 1 row affected (0.007 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [company_db]> alter table employee
+    -> modify column
+    -> eid int auto_increment;
+Query OK, 7 rows affected (0.106 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   1 | Sandesh | 27500.00 | IT        | 2025-02-12 |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |
+|   3 | Haresh  | 12000.00 | manager   | 2026-02-19 |
+|   5 | varad   | 30000.00 | HR        | NULL       |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+7 rows in set (0.002 sec)
+
+MariaDB [company_db]> alter table employee
+    -> auto_increment = 100;
+Query OK, 0 rows affected (0.012 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> select * from employee
+    -> order by salary
+    -> desc limit 3;
++-----+---------+----------+-----------+------------+
+| eid | name    | salary   | dept_name | d_date     |
++-----+---------+----------+-----------+------------+
+|   5 | varad   | 30000.00 | HR        | NULL       |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |
++-----+---------+----------+-----------+------------+
+3 rows in set (0.001 sec)
+
+MariaDB [company_db]> select distinct(salary) from employee
+    -> order by salary desc;
++----------+
+| salary   |
++----------+
+| 30000.00 |
+| 28000.00 |
+| 27500.00 |
+| 25000.00 |
+| 12000.00 |
++----------+
+5 rows in set (0.000 sec)
+
+MariaDB [company_db]> select distinct(salary) from employee
+    -> order by salary desc
+    -> limit 3;
++----------+
+| salary   |
++----------+
+| 30000.00 |
+| 28000.00 |
+| 27500.00 |
++----------+
+3 rows in set (0.000 sec)
+
+MariaDB [company_db]> select count(*) as 'total employee,
+    '> min(salary) as 'minimum salary',
+    '> max(salary) as 'maximum salary',
+    '> ';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'minimum salary',
+max(salary) as 'maximum salary',
+'' at line 1
+MariaDB [company_db]> select count(*) as 'total employee'
+    -> ,min(salary) as 'minimum salary',
+    -> max(salary) as 'maximum salary',
+    -> avg(salary) as 'average salary'
+    -> from employee;
++----------------+----------------+----------------+----------------+
+| total employee | minimum salary | maximum salary | average salary |
++----------------+----------------+----------------+----------------+
+|              7 |       12000.00 |       30000.00 |   25500.000000 |
++----------------+----------------+----------------+----------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> select distinct(salary) from employee
+    -> limit 1,1;
++----------+
+| salary   |
++----------+
+| 25000.00 |
++----------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> select distinct(salary) from employee
+    -> order by desc
+    -> limit 1,1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'desc
+limit 1,1' at line 2
+MariaDB [company_db]> select distinct(salary)
+    -> from employee
+    -> order by salary desc limit 1,1;
++----------+
+| salary   |
++----------+
+| 28000.00 |
++----------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> select dept_name,count(*)
+    -> from employee
+    -> group by dept_name;
++-----------+----------+
+| dept_name | count(*) |
++-----------+----------+
+| Admin     |        1 |
+| HR        |        4 |
+| IT        |        1 |
+| manager   |        1 |
++-----------+----------+
+4 rows in set (0.001 sec)
