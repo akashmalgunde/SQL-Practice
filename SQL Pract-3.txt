@@ -1,0 +1,676 @@
+1️⃣ Create a table departments:
+
+dept_id (Primary Key, Auto Increment)
+
+dept_name (VARCHAR 50, UNIQUE, NOT NULL)
+
+2️⃣ Insert at least 5 department records.
+
+3️⃣ Modify employees table to add:
+
+dept_id (Foreign Key referencing departments.dept_id)
+
+4️⃣ Add a UNIQUE constraint on employee name.
+
+5️⃣ Display unique department IDs from employees table.
+
+6️⃣ Display unique salaries from employees.
+
+7️⃣ Count number of employees in each department.
+
+8️⃣ Find total salary paid per department.
+
+9️⃣ Find average salary per department.
+
+🔟 Find maximum salary in each department.
+
+🔹 Part 4: HAVING Clause
+
+1️⃣1️⃣ Display departments having more than 2 employees.
+
+1️⃣2️⃣ Display departments where average salary is greater than 40000.
+
+1️⃣3️⃣ Display employee name with department name using INNER JOIN.
+
+1️⃣4️⃣ Display all employees with department name (even if department missing).
+
+1️⃣5️⃣ Display departments ordered by total salary (highest first).
+
+16️⃣ Find department with highest average salary.
+
+17️⃣ Find employee(s) earning more than department average.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+C:\xampp\mysql\bin>mysql.exe -u root
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 9
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases;
++------------------------+
+| Database               |
++------------------------+
+| company_db             |
+| health_care            |
+| health_care_management |
+| information_schema     |
+| mydb                   |
+| mysql                  |
+| performance_schema     |
+| phpmyadmin             |
+| test                   |
+| trigger_implementation |
++------------------------+
+10 rows in set (0.061 sec)
+
+MariaDB [(none)]> create table department
+    -> (dept_id int primary key ,auto_increment,
+    -> dept_name varchar(50) unique not null);
+ERROR 1046 (3D000): No database selected
+MariaDB [(none)]> use company_db;
+Database changed
+MariaDB [company_db]> create table department
+    -> (dept_id int primary key auto_increment,
+    -> dept_name varchar(50) unique not null
+    -> );
+Query OK, 0 rows affected (0.467 sec)
+
+MariaDB [company_db]> show tables;
++----------------------+
+| Tables_in_company_db |
++----------------------+
+| department           |
+| employee             |
++----------------------+
+2 rows in set (0.001 sec)
+
+MariaDB [company_db]> desc department;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| dept_id   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| dept_name | varchar(50) | NO   | UNI | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+2 rows in set (0.054 sec)
+
+MariaDB [company_db]> insert into department
+    -> values
+    -> (1,"HR"),
+    -> (2,"Admin"),
+    -> (3,"IT"),
+    -> (4,"Sales",
+    -> (5,"BD");
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 7
+MariaDB [company_db]> insert into department
+    -> values
+    -> (1,"HR"),
+    -> (2,"Admin"),
+    -> (3,"IT"),
+    -> (4,"Sales"),
+    -> (5,"BD");
+Query OK, 5 rows affected (0.008 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> desc emloyee;
+ERROR 1146 (42S02): Table 'company_db.emloyee' doesn't exist
+MariaDB [company_db]> desc employee;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| eid       | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name      | varchar(20) | YES  |     | NULL    |                |
+| salary    | float(7,2)  | YES  |     | NULL    |                |
+| dept_name | varchar(20) | YES  |     | NULL    |                |
+| d_date    | date        | YES  |     | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+5 rows in set (0.019 sec)
+
+MariaDB [company_db]> alter table employee
+    -> add column
+    -> dept_id int;
+Query OK, 0 rows affected (0.016 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> alter table employee
+    -> add constraint "my_fk"
+    -> foreign key(dept_id)
+    -> references department(dept_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '"my_fk"
+foreign key(dept_id)
+references department(dept_id)' at line 2
+MariaDB [company_db]> alter table employee
+    -> add constraint my_fk
+    -> references department(dept_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'references department(dept_id)' at line 3
+MariaDB [company_db]> alter table employee
+    -> add constraint "my_fk"
+    -> foreign key(dept_id)
+    -> references department(dept_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '"my_fk"
+foreign key(dept_id)
+references department(dept_id)' at line 2
+MariaDB [company_db]> alter table employee
+    -> add constraint my_fk
+    -> foreign key(dept_id)
+    -> references department(dept_id);
+Query OK, 7 rows affected (0.545 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> alter table emloyee
+    -> modify column name varchar(20) unique;
+ERROR 1146 (42S02): Table 'company_db.emloyee' doesn't exist
+MariaDB [company_db]> alter table employee
+    -> modify column name varchar(20) unique;
+ERROR 1062 (23000): Duplicate entry 'Shubham' for key 'name'
+MariaDB [company_db]> select * from employee;
++-----+---------+----------+-----------+------------+---------+
+| eid | name    | salary   | dept_name | d_date     | dept_id |
++-----+---------+----------+-----------+------------+---------+
+|   1 | Sandesh | 27500.00 | IT        | 2025-02-12 |    NULL |
+|   2 | Sammy   | 25000.00 | Admin     | 2025-02-12 |    NULL |
+|   3 | Haresh  | 12000.00 | manager   | 2026-02-19 |    NULL |
+|   5 | varad   | 30000.00 | HR        | NULL       |    NULL |
+|  20 | Ramesh  | 28000.00 | HR        | 2025-02-12 |    NULL |
+|  25 | Shubham | 28000.00 | HR        | 2025-02-12 |    NULL |
+|  28 | Shubham | 28000.00 | HR        | 2025-02-12 |    NULL |
++-----+---------+----------+-----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> update employee
+    -> set name = 'shubhman'
+    -> where eid = 28;
+Query OK, 1 row affected (0.004 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+-----------+------------+---------+
+| eid | name     | salary   | dept_name | d_date     | dept_id |
++-----+----------+----------+-----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | IT        | 2025-02-12 |    NULL |
+|   2 | Sammy    | 25000.00 | Admin     | 2025-02-12 |    NULL |
+|   3 | Haresh   | 12000.00 | manager   | 2026-02-19 |    NULL |
+|   5 | varad    | 30000.00 | HR        | NULL       |    NULL |
+|  20 | Ramesh   | 28000.00 | HR        | 2025-02-12 |    NULL |
+|  25 | Shubham  | 28000.00 | HR        | 2025-02-12 |    NULL |
+|  28 | shubhman | 28000.00 | HR        | 2025-02-12 |    NULL |
++-----+----------+----------+-----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> alter table employee
+    -> modify column
+    -> name varchar(20) unique;
+Query OK, 0 rows affected (0.028 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> select distinct(dept_id)
+    -> from employee;
++---------+
+| dept_id |
++---------+
+|    NULL |
++---------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> seelect * form employee;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'seelect * form employee' at line 1
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+-----------+------------+---------+
+| eid | name     | salary   | dept_name | d_date     | dept_id |
++-----+----------+----------+-----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | IT        | 2025-02-12 |    NULL |
+|   2 | Sammy    | 25000.00 | Admin     | 2025-02-12 |    NULL |
+|   3 | Haresh   | 12000.00 | manager   | 2026-02-19 |    NULL |
+|   5 | varad    | 30000.00 | HR        | NULL       |    NULL |
+|  20 | Ramesh   | 28000.00 | HR        | 2025-02-12 |    NULL |
+|  25 | Shubham  | 28000.00 | HR        | 2025-02-12 |    NULL |
+|  28 | shubhman | 28000.00 | HR        | 2025-02-12 |    NULL |
++-----+----------+----------+-----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> select * from empluyee;
+ERROR 1146 (42S02): Table 'company_db.empluyee' doesn't exist
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+-----------+------------+---------+
+| eid | name     | salary   | dept_name | d_date     | dept_id |
++-----+----------+----------+-----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | IT        | 2025-02-12 |    NULL |
+|   2 | Sammy    | 25000.00 | Admin     | 2025-02-12 |    NULL |
+|   3 | Haresh   | 12000.00 | manager   | 2026-02-19 |    NULL |
+|   5 | varad    | 30000.00 | HR        | NULL       |    NULL |
+|  20 | Ramesh   | 28000.00 | HR        | 2025-02-12 |    NULL |
+|  25 | Shubham  | 28000.00 | HR        | 2025-02-12 |    NULL |
+|  28 | shubhman | 28000.00 | HR        | 2025-02-12 |    NULL |
++-----+----------+----------+-----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> select * from department;
++---------+-----------+
+| dept_id | dept_name |
++---------+-----------+
+|       2 | Admin     |
+|       5 | BD        |
+|       1 | HR        |
+|       3 | IT        |
+|       4 | Sales     |
++---------+-----------+
+5 rows in set (0.000 sec)
+
+MariaDB [company_db]> desc employee;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| eid       | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name      | varchar(20) | YES  | UNI | NULL    |                |
+| salary    | float(7,2)  | YES  |     | NULL    |                |
+| dept_name | varchar(20) | YES  |     | NULL    |                |
+| d_date    | date        | YES  |     | NULL    |                |
+| dept_id   | int(11)     | YES  | MUL | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+6 rows in set (0.020 sec)
+
+MariaDB [company_db]> desc department;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| dept_id   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| dept_name | varchar(50) | NO   | UNI | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+2 rows in set (0.020 sec)
+
+MariaDB [company_db]> show create table employee;
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| employee | CREATE TABLE `employee` (
+  `eid` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) DEFAULT NULL,
+  `salary` float(7,2) DEFAULT NULL,
+  `dept_name` varchar(20) DEFAULT NULL,
+  `d_date` date DEFAULT NULL,
+  `dept_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`eid`),
+  UNIQUE KEY `name` (`name`),
+  KEY `my_fk` (`dept_id`),
+  CONSTRAINT `my_fk` FOREIGN KEY (`dept_id`) REFERENCES `department` (`dept_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> alter table employee
+    -> drop column dept_id;
+ERROR 1553 (HY000): Cannot drop index 'my_fk': needed in a foreign key constraint
+MariaDB [company_db]> show create table employee;
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| employee | CREATE TABLE `employee` (
+  `eid` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) DEFAULT NULL,
+  `salary` float(7,2) DEFAULT NULL,
+  `dept_name` varchar(20) DEFAULT NULL,
+  `d_date` date DEFAULT NULL,
+  `dept_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`eid`),
+  UNIQUE KEY `name` (`name`),
+  KEY `my_fk` (`dept_id`),
+  CONSTRAINT `my_fk` FOREIGN KEY (`dept_id`) REFERENCES `department` (`dept_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> alter table employee
+    -> drop constraint `my_fk`;
+Query OK, 0 rows affected (0.019 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> alter table employee
+    -> drop column dept_id;
+Query OK, 0 rows affected (0.020 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> alter table employee
+    -> drop column dept_name;
+Query OK, 0 rows affected (0.014 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> alter table employee
+    -> add column dept_id int;
+Query OK, 0 rows affected (0.031 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |    NULL |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |    NULL |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |    NULL |
+|   5 | varad    | 30000.00 | NULL       |    NULL |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |    NULL |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |    NULL |
+|  28 | shubhman | 28000.00 | 2025-02-12 |    NULL |
++-----+----------+----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> update employee set dept_id = 2
+    -> where eid in (3,5);
+Query OK, 2 rows affected (0.007 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+MariaDB [company_db]> select * from department;
++---------+-----------+
+| dept_id | dept_name |
++---------+-----------+
+|       2 | Admin     |
+|       5 | BD        |
+|       1 | HR        |
+|       3 | IT        |
+|       4 | Sales     |
++---------+-----------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> update employee
+    -> set dept_id = 3
+    -> where dept_id in (3);
+Query OK, 0 rows affected (0.000 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |    NULL |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |    NULL |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | NULL       |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |    NULL |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |    NULL |
+|  28 | shubhman | 28000.00 | 2025-02-12 |    NULL |
++-----+----------+----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> update employee set
+    -> dept_id = 3 whete eid = 1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'whete eid = 1' at line 2
+MariaDB [company_db]> update employee set
+    -> dept_id = 3 where eid = 1;
+Query OK, 1 row affected (0.006 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |    NULL |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | NULL       |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |    NULL |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |    NULL |
+|  28 | shubhman | 28000.00 | 2025-02-12 |    NULL |
++-----+----------+----------+------------+---------+
+7 rows in set (0.001 sec)
+
+MariaDB [company_db]> update employee
+    -> set dept_id = 5 where eid = 5,
+    -> set dept_id = 1 where eid = 20;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+set dept_id = 1 where eid = 20' at line 2
+MariaDB [company_db]> update employee
+    -> set dept_id = 5 where eid = 5,
+    -> dept_id = 1 where eid = 20;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+dept_id = 1 where eid = 20' at line 2
+MariaDB [company_db]> update employee
+    -> set dept_id = 1 where eid = 2,
+    -> set dept_id = 5 where eid = 20,
+    -> set dept_id = 4 where eid in(25,28);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+set dept_id = 5 where eid = 20,
+set dept_id = 4 where eid in(25,28)' at line 2
+MariaDB [company_db]> update employee
+    -> set dept_id = 1 where eid = 2,
+    -> dept_id = 5 where eid = 20,
+    -> dept_id = 4 where eid in(25,28);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+dept_id = 5 where eid = 20,
+dept_id = 4 where eid in(25,28)' at line 2
+MariaDB [company_db]> update employee
+    -> set
+    -> dept_id = 5 where eid = 20,
+    -> dept_id = 4 where eid in(25,28);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+dept_id = 4 where eid in(25,28)' at line 3
+MariaDB [company_db]> update employee
+    -> set dept_id = 1 where eid = 2,
+    -> dept_id = 5 where eid = 20;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+dept_id = 5 where eid = 20' at line 2
+MariaDB [company_db]> update employee
+    -> set dept_id = 1 where eid = 2;
+Query OK, 1 row affected (0.005 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [company_db]> update employee
+    -> set dept_id = 1 where eid = 2,
+    -> dept_id = 4 where eid in(25,28);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+dept_id = 4 where eid in(25,28)' at line 2
+MariaDB [company_db]> update employee
+    -> set dept_id = 4 where eid in(25,28);
+Query OK, 2 rows affected (0.005 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | NULL       |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |    NULL |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> update employee
+    -> set dept_id = 5
+    -> where eid = 20;
+Query OK, 1 row affected (0.007 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | NULL       |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> update employee
+    -> set d_date = curdate()
+    -> where eid = 5;
+Query OK, 1 row affected (0.004 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> alter table employee
+    -> add constraint myfk
+    -> foreign key(dept_id)
+    -> references department(dept_id);
+Query OK, 7 rows affected (0.492 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+MariaDB [company_db]> desc employee;
++---------+-------------+------+-----+---------+----------------+
+| Field   | Type        | Null | Key | Default | Extra          |
++---------+-------------+------+-----+---------+----------------+
+| eid     | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name    | varchar(20) | YES  | UNI | NULL    |                |
+| salary  | float(7,2)  | YES  |     | NULL    |                |
+| d_date  | date        | YES  |     | NULL    |                |
+| dept_id | int(11)     | YES  | MUL | NULL    |                |
++---------+-------------+------+-----+---------+----------------+
+5 rows in set (0.020 sec)
+
+MariaDB [company_db]> select dept_id,count(*)
+    -> from employee
+    -> group by dept_id;
++---------+----------+
+| dept_id | count(*) |
++---------+----------+
+|       1 |        1 |
+|       2 |        2 |
+|       3 |        1 |
+|       4 |        2 |
+|       5 |        1 |
++---------+----------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select dept_id,sum(salary),avg(salary),min(salary),max(salary)
+    -> from employee
+    -> group by dept_id;
++---------+-------------+--------------+-------------+-------------+
+| dept_id | sum(salary) | avg(salary)  | min(salary) | max(salary) |
++---------+-------------+--------------+-------------+-------------+
+|       1 |    25000.00 | 25000.000000 |    25000.00 |    25000.00 |
+|       2 |    42000.00 | 21000.000000 |    12000.00 |    30000.00 |
+|       3 |    27500.00 | 27500.000000 |    27500.00 |    27500.00 |
+|       4 |    56000.00 | 28000.000000 |    28000.00 |    28000.00 |
+|       5 |    28000.00 | 28000.000000 |    28000.00 |    28000.00 |
++---------+-------------+--------------+-------------+-------------+
+5 rows in set (0.000 sec)
+
+MariaDB [company_db]> select dept_id,count(*)
+    -> from employee
+    -> group by dept_id
+    -> having count(*) >= 2;
++---------+----------+
+| dept_id | count(*) |
++---------+----------+
+|       2 |        2 |
+|       4 |        2 |
++---------+----------+
+2 rows in set (0.001 sec)
+
+MariaDB [company_db]> select dept_id,avg(salary)
+    -> from employee
+    -> group by dept_id
+    -> having avg(salary) > 25000;
++---------+--------------+
+| dept_id | avg(salary)  |
++---------+--------------+
+|       3 | 27500.000000 |
+|       4 | 28000.000000 |
+|       5 | 28000.000000 |
++---------+--------------+
+3 rows in set (0.000 sec)
+
+MariaDB [company_db]> desc employee;
++---------+-------------+------+-----+---------+----------------+
+| Field   | Type        | Null | Key | Default | Extra          |
++---------+-------------+------+-----+---------+----------------+
+| eid     | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name    | varchar(20) | YES  | UNI | NULL    |                |
+| salary  | float(7,2)  | YES  |     | NULL    |                |
+| d_date  | date        | YES  |     | NULL    |                |
+| dept_id | int(11)     | YES  | MUL | NULL    |                |
++---------+-------------+------+-----+---------+----------------+
+5 rows in set (0.057 sec)
+
+MariaDB [company_db]> desc department;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| dept_id   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| dept_name | varchar(50) | NO   | UNI | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+2 rows in set (0.019 sec)
+
+MariaDB [company_db]> select name,dept_name
+    -> from employee
+    -> inner join
+    -> department
+    -> on employee.dept_id = department.dept_id;
++----------+-----------+
+| name     | dept_name |
++----------+-----------+
+| Sandesh  | IT        |
+| Sammy    | HR        |
+| Haresh   | Admin     |
+| varad    | Admin     |
+| Ramesh   | BD        |
+| Shubham  | Sales     |
+| shubhman | Sales     |
++----------+-----------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> select name,dept_name
+    -> from employee
+    -> left join
+    -> on employee.dept_id = department.dept_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'on employee.dept_id = department.dept_id' at line 4
+MariaDB [company_db]> select name,dept_name
+    -> from employee
+    -> left outer join
+    -> on employee.dept_id = department.dept_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'on employee.dept_id = department.dept_id' at line 4
+MariaDB [company_db]> select name,dept_name
+    -> from employee
+    -> right join
+    -> department
+    -> on employee.dept_id = department.dept_id;
++----------+-----------+
+| name     | dept_name |
++----------+-----------+
+| Haresh   | Admin     |
+| varad    | Admin     |
+| Ramesh   | BD        |
+| Sammy    | HR        |
+| Sandesh  | IT        |
+| Shubham  | Sales     |
+| shubhman | Sales     |
++----------+-----------+
+7 rows in set (0.001 sec)
+
+MariaDB [company_db]> select dept_id,max(salary)
+    -> from employee
+    -> group by dept_id;
++---------+-------------+
+| dept_id | max(salary) |
++---------+-------------+
+|       1 |    25000.00 |
+|       2 |    30000.00 |
+|       3 |    27500.00 |
+|       4 |    28000.00 |
+|       5 |    28000.00 |
++---------+-------------+
+5 rows in set (0.001 sec)
