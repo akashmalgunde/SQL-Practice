@@ -1,0 +1,502 @@
+1️⃣ Display all employees whose salary is greater than 40,000.
+
+2️⃣ Display employees who belong to "IT" department.
+
+3️⃣ Display employees who joined after 2022-01-01.
+
+4️⃣ Display employees whose salary is between 30,000 and 60,000.
+
+5️⃣ Display employees whose name starts with letter 'A'.
+
+6️⃣ Display top 5 highest paid employees.
+
+7️⃣ Display lowest salary employee.
+
+8️⃣ Display employees sorted by joining date (latest first).
+
+9️⃣ Find total number of employees.
+
+🔟 Find average salary of employees.
+
+1️⃣1️⃣ Find maximum and minimum salary.
+
+1️⃣2️⃣ Count employees in each department.
+
+1️⃣3️⃣ Display departments having more than 2 employees.
+
+1️⃣4️⃣ Display departments where average salary is greater than 50,000.
+
+1️⃣5️⃣ Display department name and total salary paid in each department.
+
+16️⃣ Find second highest salary.
+
+17️⃣ Find employees earning more than average salary of company
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Microsoft Windows [Version 10.0.19045.6466]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\xampp\mysql\bin>mysql.exe -u root
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 10
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases;
++------------------------+
+| Database               |
++------------------------+
+| company_db             |
+| health_care            |
+| health_care_management |
+| information_schema     |
+| mydb                   |
+| mysql                  |
+| performance_schema     |
+| phpmyadmin             |
+| test                   |
+| trigger_implementation |
++------------------------+
+10 rows in set (0.134 sec)
+
+MariaDB [(none)]> use company_db;
+Database changed
+MariaDB [company_db]> show tables;
++----------------------+
+| Tables_in_company_db |
++----------------------+
+| department           |
+| employee             |
++----------------------+
+2 rows in set (0.022 sec)
+
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.054 sec)
+
+MariaDB [company_db]> select * from department;
++---------+-----------+
+| dept_id | dept_name |
++---------+-----------+
+|       2 | Admin     |
+|       5 | BD        |
+|       1 | HR        |
+|       3 | IT        |
+|       4 | Sales     |
++---------+-----------+
+5 rows in set (0.021 sec)
+
+MariaDB [company_db]> select d.dept_id,dept_name,count(*),avg(salary)
+    -> from employee
+    -> inner join
+    -> department as d
+    -> on d.dept_id = employee.dept_id
+    -> group by d.dept_id
+    -> having avg(salary) > 25000;
++---------+-----------+----------+--------------+
+| dept_id | dept_name | count(*) | avg(salary)  |
++---------+-----------+----------+--------------+
+|       3 | IT        |        1 | 27500.000000 |
+|       4 | Sales     |        2 | 28000.000000 |
+|       5 | BD        |        1 | 28000.000000 |
++---------+-----------+----------+--------------+
+3 rows in set (0.062 sec)
+
+MariaDB [company_db]> select name,dept_name,d.dept_id
+    -> from employee as e
+    -> inner join
+    -> department d
+    -> on d.dept_id = e.dept_id
+    -> group by d.dept_id
+    -> having d_date > avg(d_date);
+ERROR 1054 (42S22): Unknown column 'd_date' in 'having clause'
+MariaDB [company_db]> select name,dept_name,d.dept_id,d_date
+    -> from employee as e
+    -> inner join
+    -> department d
+    -> on d.dept_id = e.dept_id
+    -> group by d.dept_id
+    -> having d_date > avg(d_date);
+Empty set, 1 warning (0.007 sec)
+
+MariaDB [company_db]> select name,dept_name,d.dept_id,d_date
+    -> from employee as e
+    -> inner join
+    -> department d
+    -> on d.dept_id = e.dept_id
+    -> group by d.dept_id
+    -> having d_date < avg(d_date);
+Empty set, 1 warning (0.001 sec)
+
+MariaDB [company_db]> SELECT e.name, d.dept_name, e.dept_id, e.d_date
+    -> FROM employee e
+    -> JOIN department d
+    -> ON d.dept_id = e.dept_id
+    -> WHERE e.d_date > (
+    ->     SELECT AVG(d_date)
+    ->     FROM employee
+    ->     WHERE dept_id = e.dept_id
+    -> );
++-------+-----------+---------+------------+
+| name  | dept_name | dept_id | d_date     |
++-------+-----------+---------+------------+
+| varad | Admin     |       2 | 2026-02-20 |
++-------+-----------+---------+------------+
+1 row in set, 2 warnings (0.048 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary < 40000;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.130 sec)
+
+MariaDB [company_db]> select * from employee where dept_id =
+    -> (select dept_id from department
+    -> where dept_name = 'it');
++-----+---------+----------+------------+---------+
+| eid | name    | salary   | d_date     | dept_id |
++-----+---------+----------+------------+---------+
+|   1 | Sandesh | 27500.00 | 2025-02-12 |       3 |
++-----+---------+----------+------------+---------+
+1 row in set (0.032 sec)
+
+MariaDB [company_db]> select employee.*
+    -> from employee
+    -> inner join
+    -> department
+    -> on employee.dept_id = department.dept_id
+    -> where dept_name = 'it';
++-----+---------+----------+------------+---------+
+| eid | name    | salary   | d_date     | dept_id |
++-----+---------+----------+------------+---------+
+|   1 | Sandesh | 27500.00 | 2025-02-12 |       3 |
++-----+---------+----------+------------+---------+
+1 row in set (0.002 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where d_date > '2022-01-01';
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary between 25000 and 35000;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+6 rows in set (0.002 sec)
+
+MariaDB [company_db]> salect * from emploee
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'salect * from emploee' at line 1
+MariaDB [company_db]> select * from employee
+    -> where name like 'R%';
++-----+--------+----------+------------+---------+
+| eid | name   | salary   | d_date     | dept_id |
++-----+--------+----------+------------+---------+
+|  20 | Ramesh | 28000.00 | 2025-02-12 |       5 |
++-----+--------+----------+------------+---------+
+1 row in set (0.005 sec)
+
+MariaDB [company_db]> select * from employee
+    -> order by salary desc
+    -> limit 3;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+3 rows in set (0.342 sec)
+
+MariaDB [company_db]> select * from distinct(salary),employee.*
+    -> from employee
+    -> order by salary desc
+    -> limit 3;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'distinct(salary),employee.*
+from employee
+order by salary desc
+limit 3' at line 1
+MariaDB [company_db]> select * from distinct(salary)
+    -> from employee
+    -> order by salary
+    -> desc
+    -> limit 3;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'distinct(salary)
+from employee
+order by salary
+desc
+limit 3' at line 1
+MariaDB [company_db]> select distinct(salary),employee.*
+    -> from employee
+    -> order by salary
+    -> desc
+    -> limit 3;
++----------+-----+----------+----------+------------+---------+
+| salary   | eid | name     | salary   | d_date     | dept_id |
++----------+-----+----------+----------+------------+---------+
+| 30000.00 |   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+| 28000.00 |  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
+| 28000.00 |  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
++----------+-----+----------+----------+------------+---------+
+3 rows in set (0.001 sec)
+
+MariaDB [company_db]> select distinct(salary),name from employee
+    -> order by salary desc
+    -> limit 3;
++----------+---------+
+| salary   | name    |
++----------+---------+
+| 30000.00 | varad   |
+| 28000.00 | Ramesh  |
+| 28000.00 | Shubham |
++----------+---------+
+3 rows in set (0.302 sec)
+
+MariaDB [company_db]> select distinct(salary) from employee
+    -> order by salary desc
+    -> limit 3;
++----------+
+| salary   |
++----------+
+| 30000.00 |
+| 28000.00 |
+| 27500.00 |
++----------+
+3 rows in set (0.000 sec)
+
+MariaDB [company_db]> select * from employee
+    -> order by salary
+    -> limit ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 3
+MariaDB [company_db]> select * from employee
+    -> order by salary
+    -> limit 1;
++-----+--------+----------+------------+---------+
+| eid | name   | salary   | d_date     | dept_id |
++-----+--------+----------+------------+---------+
+|   3 | Haresh | 12000.00 | 2026-02-19 |       2 |
++-----+--------+----------+------------+---------+
+1 row in set (0.025 sec)
+
+MariaDB [company_db]> select * from employee
+    -> order by
+    -> d_date
+    -> desc;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> select count(*) from employee;
++----------+
+| count(*) |
++----------+
+|        7 |
++----------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> select count(*) as 'total employee' from employee;
++----------------+
+| total employee |
++----------------+
+|              7 |
++----------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> select avg(salary) as 'average employee salary'
+    -> from employee;
++-------------------------+
+| average employee salary |
++-------------------------+
+|            25500.000000 |
++-------------------------+
+1 row in set (0.000 sec)
+
+MariaDB [company_db]> select round(avg(salary)) as 'average employee salary'
+    -> from employee;
++-------------------------+
+| average employee salary |
++-------------------------+
+|                   25500 |
++-------------------------+
+1 row in set (0.030 sec)
+
+MariaDB [company_db]> select floor(avg(salary)) as 'average employee salary'
+    -> from employee;
++-------------------------+
+| average employee salary |
++-------------------------+
+|                   25500 |
++-------------------------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> update employee
+    -> set salary = 25500.41512
+    -> where salary = 25500;
+Query OK, 0 rows affected (0.050 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.001 sec)
+
+MariaDB [company_db]> select count(*),dept_id
+    -> from employee
+    -> group by dept_id;
++----------+---------+
+| count(*) | dept_id |
++----------+---------+
+|        1 |       1 |
+|        2 |       2 |
+|        1 |       3 |
+|        2 |       4 |
+|        1 |       5 |
++----------+---------+
+5 rows in set (0.022 sec)
+
+MariaDB [company_db]> select count(*) as 'count of employee',dept_id
+    -> group by dept_id;
+ERROR 1054 (42S22): Unknown column 'dept_id' in 'field list'
+MariaDB [company_db]> select count(*) as 'count of employee',dept_id
+    -> from employee
+    -> group by dept_id;
++-------------------+---------+
+| count of employee | dept_id |
++-------------------+---------+
+|                 1 |       1 |
+|                 2 |       2 |
+|                 1 |       3 |
+|                 2 |       4 |
+|                 1 |       5 |
++-------------------+---------+
+5 rows in set (0.020 sec)
+
+MariaDB [company_db]> select dept_id,avg(Salary)
+    -> from employee
+    -> group by dept_id
+    -> having avg(salary) > 15000;
++---------+--------------+
+| dept_id | avg(Salary)  |
++---------+--------------+
+|       1 | 25000.000000 |
+|       2 | 21000.000000 |
+|       3 | 27500.000000 |
+|       4 | 28000.000000 |
+|       5 | 28000.000000 |
++---------+--------------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select dept_name,d.dept_id
+    -> from employee e
+    -> inner join
+    -> department d
+    -> on e.dept_id = d.dept_id
+    -> group by d.dept_id
+    -> ;
++-----------+---------+
+| dept_name | dept_id |
++-----------+---------+
+| HR        |       1 |
+| Admin     |       2 |
+| IT        |       3 |
+| Sales     |       4 |
+| BD        |       5 |
++-----------+---------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select dept_name,d.dept_id,sum(salary)
+    -> from employee e
+    -> inner join
+    -> department d
+    -> on e.dept_id = d.dept_id
+    -> group by d.dept_id
+    -> ;
++-----------+---------+-------------+
+| dept_name | dept_id | sum(salary) |
++-----------+---------+-------------+
+| HR        |       1 |    25000.00 |
+| Admin     |       2 |    42000.00 |
+| IT        |       3 |    27500.00 |
+| Sales     |       4 |    56000.00 |
+| BD        |       5 |    28000.00 |
++-----------+---------+-------------+
+5 rows in set (0.041 sec)
+
+MariaDB [company_db]> select distinct(salary)
+    -> from employee
+    -> order by salary desc
+    -> limit 1 1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '1' at line 4
+MariaDB [company_db]> select distinct(salary)
+    -> from employee
+    -> order by salary desc
+    -> limit 1,1;
++----------+
+| salary   |
++----------+
+| 28000.00 |
++----------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]>
