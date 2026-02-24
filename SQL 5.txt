@@ -1,0 +1,394 @@
+Microsoft Windows [Version 10.0.19045.6466]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\xampp\mysql\bin>mysql.exe -u root
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 11
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases;
++------------------------+
+| Database               |
++------------------------+
+| company_db             |
+| health_care            |
+| health_care_management |
+| information_schema     |
+| mydb                   |
+| mysql                  |
+| performance_schema     |
+| phpmyadmin             |
+| test                   |
+| trigger_implementation |
++------------------------+
+10 rows in set (0.099 sec)
+
+MariaDB [(none)]> use company_db;
+Database changed
+MariaDB [company_db]> show tables;
++----------------------+
+| Tables_in_company_db |
++----------------------+
+| department           |
+| employee             |
++----------------------+
+2 rows in set (0.088 sec)
+
+MariaDB [company_db]> desc department;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| dept_id   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| dept_name | varchar(50) | NO   | UNI | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+2 rows in set (0.614 sec)
+
+MariaDB [company_db]> desc employee;
++---------+-------------+------+-----+---------+----------------+
+| Field   | Type        | Null | Key | Default | Extra          |
++---------+-------------+------+-----+---------+----------------+
+| eid     | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name    | varchar(20) | YES  | UNI | NULL    |                |
+| salary  | float(7,2)  | YES  |     | NULL    |                |
+| d_date  | date        | YES  |     | NULL    |                |
+| dept_id | int(11)     | YES  | MUL | NULL    |                |
++---------+-------------+------+-----+---------+----------------+
+5 rows in set (0.035 sec)
+
+MariaDB [company_db]> select e.name,d.dept_name from employee as e
+    -> inner join
+    -> department d
+    -> on e.dept_id = d.dept_id;
++----------+-----------+
+| name     | dept_name |
++----------+-----------+
+| Sandesh  | IT        |
+| Sammy    | HR        |
+| Haresh   | Admin     |
+| varad    | Admin     |
+| Ramesh   | BD        |
+| Shubham  | Sales     |
+| shubhman | Sales     |
++----------+-----------+
+7 rows in set (0.053 sec)
+
+MariaDB [company_db]> select e.name,d.dept_name from employee as e
+    -> inner join
+    -> department d
+    -> on e.dept_id = d.dept_id
+    -> where dept_name = 'hr';
++-------+-----------+
+| name  | dept_name |
++-------+-----------+
+| Sammy | HR        |
++-------+-----------+
+1 row in set (0.030 sec)
+
+MariaDB [company_db]> select e.name,d.dept_name,e.salary from employee as e
+    -> select e.name,d.dept_name from employee as e
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'select e.name,d.dept_name from employee as e' at line 2
+MariaDB [company_db]> select e.name,d.dept_name,e.salary from employee as e
+    -> inner join
+    -> department d
+    -> on e.dept_id = d.dept_id
+    -> order by dept_name desc;
++----------+-----------+----------+
+| name     | dept_name | salary   |
++----------+-----------+----------+
+| Shubham  | Sales     | 28000.00 |
+| shubhman | Sales     | 28000.00 |
+| Sandesh  | IT        | 27500.00 |
+| Sammy    | HR        | 25000.00 |
+| Ramesh   | BD        | 28000.00 |
+| Haresh   | Admin     | 12000.00 |
+| varad    | Admin     | 30000.00 |
++----------+-----------+----------+
+7 rows in set (0.003 sec)
+
+MariaDB [company_db]> select * from e.*,d.dept_name
+    -> from emloyee as e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where year(d_date) > 2021;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '*,d.dept_name
+from emloyee as e
+inner join department d
+on e.dept_id = d.dept...' at line 1
+MariaDB [company_db]> select * from e.*,d.dept_name
+    -> from employee as e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where year(d_date) > 2021;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '*,d.dept_name
+from employee as e
+inner join department d
+on e.dept_id = d.dep...' at line 1
+MariaDB [company_db]> select  e.*,d.dept_name
+    -> from employee as e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where year(d_date) > 2021;
++-----+----------+----------+------------+---------+-----------+
+| eid | name     | salary   | d_date     | dept_id | dept_name |
++-----+----------+----------+------------+---------+-----------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 | IT        |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 | HR        |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 | Admin     |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 | Admin     |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 | BD        |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 | Sales     |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 | Sales     |
++-----+----------+----------+------------+---------+-----------+
+7 rows in set (0.003 sec)
+
+MariaDB [company_db]> select * from employee
+    -> inner join department
+    -> on employee.dept_id = department.dept_id
+    -> where dept_name = 'sales' or dept_name = 'hr';
++-----+----------+----------+------------+---------+---------+-----------+
+| eid | name     | salary   | d_date     | dept_id | dept_id | dept_name |
++-----+----------+----------+------------+---------+---------+-----------+
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |       1 | HR        |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |       4 | Sales     |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |       4 | Sales     |
++-----+----------+----------+------------+---------+---------+-----------+
+3 rows in set (0.041 sec)
+
+MariaDB [company_db]> select * from employee
+    -> inner join department
+    -> on employee.dept_id = department.dept_id
+    -> where dept_name in ('sales','hr');
++-----+----------+----------+------------+---------+---------+-----------+
+| eid | name     | salary   | d_date     | dept_id | dept_id | dept_name |
++-----+----------+----------+------------+---------+---------+-----------+
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |       1 | HR        |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |       4 | Sales     |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |       4 | Sales     |
++-----+----------+----------+------------+---------+---------+-----------+
+3 rows in set (0.002 sec)
+
+MariaDB [company_db]> select e.*,d.dept_name from employee
+    -> e inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where name like 's%';
++-----+----------+----------+------------+---------+-----------+
+| eid | name     | salary   | d_date     | dept_id | dept_name |
++-----+----------+----------+------------+---------+-----------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 | IT        |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 | HR        |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 | Sales     |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 | Sales     |
++-----+----------+----------+------------+---------+-----------+
+4 rows in set (0.013 sec)
+
+MariaDB [company_db]> select d.dept_name from employee
+    -> inner join
+    -> department d
+    -> on employee.dept_id = d.dept_id
+    -> group by dept_name;
++-----------+
+| dept_name |
++-----------+
+| Admin     |
+| BD        |
+| HR        |
+| IT        |
+| Sales     |
++-----------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select d.dept_name,count(*) from employee
+    -> inner join
+    -> department d
+    -> on employee.dept_id = d.dept_id
+    -> group by dept_name;
++-----------+----------+
+| dept_name | count(*) |
++-----------+----------+
+| Admin     |        2 |
+| BD        |        1 |
+| HR        |        1 |
+| IT        |        1 |
+| Sales     |        2 |
++-----------+----------+
+5 rows in set (0.004 sec)
+
+MariaDB [company_db]> select d.dept_name,avg(salary) from employee
+    -> inner join
+    -> department d
+    -> on employee.dept_id = d.dept_id
+    -> group by dept_name;
++-----------+--------------+
+| dept_name | avg(salary)  |
++-----------+--------------+
+| Admin     | 21000.000000 |
+| BD        | 28000.000000 |
+| HR        | 25000.000000 |
+| IT        | 27500.000000 |
+| Sales     | 28000.000000 |
++-----------+--------------+
+5 rows in set (0.002 sec)
+
+MariaDB [company_db]> select d.dept_name,max(salary) from employee
+    -> inner join
+    -> department d
+    -> on employee.dept_id = d.dept_id
+    -> group by dept_name;
++-----------+-------------+
+| dept_name | max(salary) |
++-----------+-------------+
+| Admin     |    30000.00 |
+| BD        |    28000.00 |
+| HR        |    25000.00 |
+| IT        |    27500.00 |
+| Sales     |    28000.00 |
++-----------+-------------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select d.dept_name,min(salary) from employee
+    -> inner join
+    -> department d
+    -> on employee.dept_id = d.dept_id
+    -> group by dept_name;
++-----------+-------------+
+| dept_name | min(salary) |
++-----------+-------------+
+| Admin     |    12000.00 |
+| BD        |    28000.00 |
+| HR        |    25000.00 |
+| IT        |    27500.00 |
+| Sales     |    28000.00 |
++-----------+-------------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select d.dept_name,sum(salary) from employee
+    -> inner join
+    ->
+    -> department d
+    -> on employee.dept_id = d.dept_id
+    -> group by dept_name;
++-----------+-------------+
+| dept_name | sum(salary) |
++-----------+-------------+
+| Admin     |    42000.00 |
+| BD        |    28000.00 |
+| HR        |    25000.00 |
+| IT        |    27500.00 |
+| Sales     |    56000.00 |
++-----------+-------------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select d.dept_name,count(*) from employee
+    -> inner join
+    -> department d
+    -> on employee.dept_id = d.dept_id
+    -> group by dept_name
+    -> having count(*) >= 2;
++-----------+----------+
+| dept_name | count(*) |
++-----------+----------+
+| Admin     |        2 |
+| Sales     |        2 |
++-----------+----------+
+2 rows in set (0.001 sec)
+
+MariaDB [company_db]> select d.dept_name,avg(salary) from employee
+    -> inner join
+    -> department d
+    -> on employee.dept_id = d.dept_id
+    -> group by dept_name
+    -> having avg(salary) > 20000;
++-----------+--------------+
+| dept_name | avg(salary)  |
++-----------+--------------+
+| Admin     | 21000.000000 |
+| BD        | 28000.000000 |
+| HR        | 25000.000000 |
+| IT        | 27500.000000 |
+| Sales     | 28000.000000 |
++-----------+--------------+
+5 rows in set (0.002 sec)
+
+MariaDB [company_db]> select e.*,d.dept_name from employee
+    -> from employee e
+    -> inner join
+    -> department d
+    -> on e.dept_id = d.dept_id
+    -> order by salary desc
+    -> limit 1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from employee e
+inner join
+department d
+on e.dept_id = d.dept_id
+order by sa...' at line 2
+MariaDB [company_db]> select e.*,d.dept_name from employee
+    -> e
+    -> inner join
+    -> department d
+    -> on e.dept_id = d.dept_id
+    -> order by salary desc
+    -> limit 1;
++-----+-------+----------+------------+---------+-----------+
+| eid | name  | salary   | d_date     | dept_id | dept_name |
++-----+-------+----------+------------+---------+-----------+
+|   5 | varad | 30000.00 | 2026-02-20 |       2 | Admin     |
++-----+-------+----------+------------+---------+-----------+
+1 row in set (0.002 sec)
+
+MariaDB [company_db]> select d.dept_name,count(*) from employee
+    -> inner join
+    -> department d
+    -> on employee.dept_id = d.dept_id
+    -> group by dept_name
+    -> order by count(*)
+    -> limit 1;
++-----------+----------+
+| dept_name | count(*) |
++-----------+----------+
+| BD        |        1 |
++-----------+----------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select d.dept_name,count(*) from employee
+    -> inner join
+    -> department d
+    -> on employee.dept_id = d.dept_id
+    -> group by dept_name
+    -> order by count(*) desc
+    -> limit 1;
++-----------+----------+
+| dept_name | count(*) |
++-----------+----------+
+| Admin     |        2 |
++-----------+----------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary > (select avg(salary) from employee);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+5 rows in set (0.010 sec)
+
+MariaDB [company_db]> select * from employee
+    -> order by salary
+    -> desc limit 1,1;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+1 row in set (0.022 sec)
+
+MariaDB [company_db]>
