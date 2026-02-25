@@ -1,0 +1,462 @@
+1️⃣ Display employees earning more than average salary of company.
+
+2️⃣ Display employees earning maximum salary.
+
+3️⃣ Display employees earning minimum salary.
+
+4️⃣ Display employees earning more than minimum salary.
+
+5️⃣ Display employees whose salary equals second highest salary.
+
+6️⃣ Display employees working in the same department as employee named "Rahul".
+
+7️⃣ Display employees who belong to department "IT" (using subquery instead of join).
+
+8️⃣ Display employees whose department id is the maximum department id in departments table.
+
+9️⃣ Display employees who earn more than average salary of their department.
+
+🔟 Display employees who joined on the earliest joining date.
+
+1️⃣1️⃣ Display employees who joined after the latest joining date in HR department.
+
+1️⃣2️⃣ Display departments that have employees.
+
+1️⃣3️⃣ Display departments that have no employees.
+
+1️⃣4️⃣ Display employee name, salary, and department name
+only for employees earning more than company average salary.
+
+1️⃣5️⃣ Display departments where average salary is greater than company average salary.
+
+16️⃣ Find second highest salary without using LIMIT.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Microsoft Windows [Version 10.0.19045.6466]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\xampp\mysql\bin>mysql.exe -u root
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 13
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases;
++------------------------+
+| Database               |
++------------------------+
+| company_db             |
+| health_care            |
+| health_care_management |
+| information_schema     |
+| mydb                   |
+| mysql                  |
+| performance_schema     |
+| phpmyadmin             |
+| test                   |
+| trigger_implementation |
++------------------------+
+10 rows in set (0.020 sec)
+
+MariaDB [(none)]> use company_db;
+Database changed
+MariaDB [company_db]> select * from employee
+    -> where salary > select avg(salary) from employee;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'select avg(salary) from employee' at line 2
+MariaDB [company_db]> select * from employee
+    -> where salary > (select avg(salary) from employee);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+5 rows in set (0.082 sec)
+
+MariaDB [company_db]> select max(salary) from employee;
++-------------+
+| max(salary) |
++-------------+
+|    30000.00 |
++-------------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select salary from employee
+    -> order by salary desc
+    -> limit 1;
++----------+
+| salary   |
++----------+
+| 30000.00 |
++----------+
+1 row in set (0.019 sec)
+
+MariaDB [company_db]> select min(Salary) from employee;
++-------------+
+| min(Salary) |
++-------------+
+|    12000.00 |
++-------------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> order by salary limit 1;
++-----+--------+----------+------------+---------+
+| eid | name   | salary   | d_date     | dept_id |
++-----+--------+----------+------------+---------+
+|   3 | Haresh | 12000.00 | 2026-02-19 |       2 |
++-----+--------+----------+------------+---------+
+1 row in set (0.017 sec)
+
+MariaDB [company_db]> select distinct(salary) from employee;
++----------+
+| salary   |
++----------+
+| 27500.00 |
+| 25000.00 |
+| 12000.00 |
+| 30000.00 |
+| 28000.00 |
++----------+
+5 rows in set (0.332 sec)
+
+MariaDB [company_db]> select distinct(salary) from employee
+    -> order by salary desc
+    -> limit 2,1;
++----------+
+| salary   |
++----------+
+| 27500.00 |
++----------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary > (select min(salary) from employee);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+6 rows in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary = ( select
+    -> distinct(salary) from employee
+    -> order by salary desc limit 1,1);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+3 rows in set (0.001 sec)
+
+MariaDB [company_db]> select name from employee
+    -> where dept_id = (select dept_id from employee where name = 'shubham');
++----------+
+| name     |
++----------+
+| Shubham  |
+| shubhman |
++----------+
+2 rows in set (0.342 sec)
+
+MariaDB [company_db]> where dept_id = (select dept_id from employee where name = 'shubham') and name != 'shubham';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'where dept_id = (select dept_id from employee where name = 'shubham') and nam...' at line 1
+MariaDB [company_db]> select name from employee
+    -> where dept_id = (select dept_id from employee where name = 'shubham') and name != 'shubham';
++----------+
+| name     |
++----------+
+| shubhman |
++----------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select * from deppartment;
+ERROR 1146 (42S02): Table 'company_db.deppartment' doesn't exist
+MariaDB [company_db]> select * from department;
++---------+-----------+
+| dept_id | dept_name |
++---------+-----------+
+|       2 | Admin     |
+|       5 | BD        |
+|       1 | HR        |
+|       3 | IT        |
+|       4 | Sales     |
++---------+-----------+
+5 rows in set (0.024 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where dept_id = (
+    -> select dept_id from department where dept_name ='it');
++-----+---------+----------+------------+---------+
+| eid | name    | salary   | d_date     | dept_id |
++-----+---------+----------+------------+---------+
+|   1 | Sandesh | 27500.00 | 2025-02-12 |       3 |
++-----+---------+----------+------------+---------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where dept_id = (select max(dept_id)
+    -> from employee);
++-----+--------+----------+------------+---------+
+| eid | name   | salary   | d_date     | dept_id |
++-----+--------+----------+------------+---------+
+|  20 | Ramesh | 28000.00 | 2025-02-12 |       5 |
++-----+--------+----------+------------+---------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select * employee
+    -> where salary > (select avg(salary) from employee
+    -> where dept_id = dept_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'employee
+where salary > (select avg(salary) from employee
+where dept_id = dep...' at line 1
+MariaDB [company_db]> select * employee
+    -> where salary > (select avg(salary) from employee
+    -> where dept_id = dept_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'employee
+where salary > (select avg(salary) from employee
+where dept_id = dep...' at line 1
+MariaDB [company_db]> select * from employee as e
+    -> where salary >
+    -> (select avg(salary) from employee
+    -> where dept_id = e.dept_id);
++-----+-------+----------+------------+---------+
+| eid | name  | salary   | d_date     | dept_id |
++-----+-------+----------+------------+---------+
+|   5 | varad | 30000.00 | 2026-02-20 |       2 |
++-----+-------+----------+------------+---------+
+1 row in set (0.018 sec)
+
+MariaDB [company_db]> SELECT *
+    -> FROM employees e
+    -> WHERE salary > (
+    ->     SELECT AVG(salary)
+    ->     FROM employees
+    ->     WHERE dept_id = e.dept_id
+    -> );
+ERROR 1146 (42S02): Table 'company_db.employees' doesn't exist
+MariaDB [company_db]> SELECT *
+    -> FROM employee e
+    -> WHERE salary > (
+    ->     SELECT AVG(salary)
+    ->     FROM employee
+    ->     WHERE dept_id = e.dept_id
+    -> );
++-----+-------+----------+------------+---------+
+| eid | name  | salary   | d_date     | dept_id |
++-----+-------+----------+------------+---------+
+|   5 | varad | 30000.00 | 2026-02-20 |       2 |
++-----+-------+----------+------------+---------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where d_date = (select min(d_date) from employee);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where d_date = (select d_date from employee order by d_date limit 1);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee where d_date
+    -> > (select min(d_date) from employee
+    -> where dept_id = (select dept_id from department where dept_name = 'hr');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 3
+MariaDB [company_db]> select * from employee where d_date
+    -> > (select min(d_date) from employee
+    -> where dept_id = (select dept_id from department where dept_name = 'hr');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 3
+MariaDB [company_db]> select * from employee where d_date
+    -> > (select min(d_date) from employee
+    -> where dept_id = (select dept_id from department where dept_name = 'hr'));
++-----+--------+----------+------------+---------+
+| eid | name   | salary   | d_date     | dept_id |
++-----+--------+----------+------------+---------+
+|   3 | Haresh | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad  | 30000.00 | 2026-02-20 |       2 |
++-----+--------+----------+------------+---------+
+2 rows in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where dept_id not in (select dept_id from department);
+Empty set (0.349 sec)
+
+MariaDB [company_db]> insert into department values (10,'networking');
+Query OK, 1 row affected (0.425 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where dept_id in (select dept_id from employee);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.001 sec)
+
+MariaDB [company_db]> select dept_name,dept_id from department
+    -> where dept_id not in (select distinct(dept_id) from employee);
++------------+---------+
+| dept_name  | dept_id |
++------------+---------+
+| networking |      10 |
++------------+---------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select name,salary,d.dept_id
+    -> from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary > (select avg(salary) from employee);
++----------+----------+---------+
+| name     | salary   | dept_id |
++----------+----------+---------+
+| Sandesh  | 27500.00 |       3 |
+| varad    | 30000.00 |       2 |
+| Ramesh   | 28000.00 |       5 |
+| Shubham  | 28000.00 |       4 |
+| shubhman | 28000.00 |       4 |
++----------+----------+---------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select name,salary,d.dept_id,d.dept_name
+    -> from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary > (select avg(salary) from employee);
++----------+----------+---------+-----------+
+| name     | salary   | dept_id | dept_name |
++----------+----------+---------+-----------+
+| Sandesh  | 27500.00 |       3 | IT        |
+| varad    | 30000.00 |       2 | Admin     |
+| Ramesh   | 28000.00 |       5 | BD        |
+| Shubham  | 28000.00 |       4 | Sales     |
+| shubhman | 28000.00 |       4 | Sales     |
++----------+----------+---------+-----------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select d.dept_name from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary > (select avg(salary) from employee);
++-----------+
+| dept_name |
++-----------+
+| IT        |
+| Admin     |
+| BD        |
+| Sales     |
+| Sales     |
++-----------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select distinct(d.dept_name) from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary > (select avg(salary) from employee);
++-----------+
+| dept_name |
++-----------+
+| IT        |
+| Admin     |
+| BD        |
+| Sales     |
++-----------+
+4 rows in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary < (select min(salary) from employee);
+Empty set (0.026 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary < (select max(salary) from employee);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+6 rows in set (0.000 sec)
+
+MariaDB [company_db]> select salary from employee
+    -> where salary;
++----------+
+| salary   |
++----------+
+| 27500.00 |
+| 25000.00 |
+| 12000.00 |
+| 30000.00 |
+| 28000.00 |
+| 28000.00 |
+| 28000.00 |
++----------+
+7 rows in set (0.001 sec)
+
+MariaDB [company_db]> select max(salary) from employee
+    -> where salary < max(salary) from employee;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from employee' at line 2
+MariaDB [company_db]> select max(salary) from employee
+    -> where salary < max(salary);
+ERROR 1111 (HY000): Invalid use of group function
+MariaDB [company_db]> select max(salary) from employee
+    -> where (select salary from employee where salary < max(salary);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2
+MariaDB [company_db]> select max(salary) from employee
+    -> (select salary from employee where salary < max(salary);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(select salary from employee where salary < max(salary)' at line 2
+MariaDB [company_db]> select max(salary) from
+    -> (select salary from employee where salary < max(salary);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2
+MariaDB [company_db]> select max(salary) from employee
+    -> where salary < (select max(salary) from employee);
++-------------+
+| max(salary) |
++-------------+
+|    28000.00 |
++-------------+
+1 row in set (0.009 sec)
