@@ -1,0 +1,214 @@
+Question 1 — Department Average Comparison
+
+Display employees who earn more than average salary of their department
+(show name, salary, department name).
+
+Question 2 — Highest Salary Per Department
+
+Display the highest paid employee in each department.
+
+Question 3 — Employees Above Company Average
+
+Display employee name, salary, and department name
+for employees earning more than company average salary.
+
+Question 4 — Departments With No Employees
+
+Display department names that do not have any employees.
+
+Question 5 — Second Highest Salary
+
+Display employee(s) who earn the second highest salary.
+
+Question 6 — Department With Highest Total Salary
+
+Display the department whose total salary payout is highest.
+
+Question 7 — Employees Joined After Department Average Date
+
+Display employees who joined after the average joining date of their department.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Microsoft Windows [Version 10.0.19045.6466]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\xampp\mysql\bin>mysql.exe -u root
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 14
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> use company_db;
+Database changed
+MariaDB [company_db]> desc employee;
++---------+-------------+------+-----+---------+----------------+
+| Field   | Type        | Null | Key | Default | Extra          |
++---------+-------------+------+-----+---------+----------------+
+| eid     | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name    | varchar(20) | YES  | UNI | NULL    |                |
+| salary  | float(7,2)  | YES  |     | NULL    |                |
+| d_date  | date        | YES  |     | NULL    |                |
+| dept_id | int(11)     | YES  | MUL | NULL    |                |
++---------+-------------+------+-----+---------+----------------+
+5 rows in set (0.188 sec)
+
+MariaDB [company_db]> desc department;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| dept_id   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| dept_name | varchar(50) | NO   | UNI | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+2 rows in set (0.036 sec)
+
+MariaDB [company_db]> select e.name,e.salary,d.dept_name
+    -> from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary > (select avg(salary) from employee
+    -> where eid = e.eid);
+Empty set (0.064 sec)
+
+MariaDB [company_db]> select e.name,e.salary,d.dept_name
+    -> from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary > (select avg(salary) from employee
+    -> where dept_id = e.dept_id);
++-------+----------+-----------+
+| name  | salary   | dept_name |
++-------+----------+-----------+
+| varad | 30000.00 | Admin     |
++-------+----------+-----------+
+1 row in set (0.023 sec)
+
+MariaDB [company_db]> select e.name,e.salary,d.dept_name
+    -> from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary = (select max(salary) from employee
+    -> where dept_id = e.dept_id);
++----------+----------+-----------+
+| name     | salary   | dept_name |
++----------+----------+-----------+
+| Sandesh  | 27500.00 | IT        |
+| Sammy    | 25000.00 | HR        |
+| varad    | 30000.00 | Admin     |
+| Ramesh   | 28000.00 | BD        |
+| Shubham  | 28000.00 | Sales     |
+| shubhman | 28000.00 | Sales     |
++----------+----------+-----------+
+6 rows in set (0.002 sec)
+
+MariaDB [company_db]> select distinct e.name,e.salary,d.dept_name
+    -> from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary = (select max(salary) from employee
+    -> where dept_id = e.dept_id);
++----------+----------+-----------+
+| name     | salary   | dept_name |
++----------+----------+-----------+
+| Sandesh  | 27500.00 | IT        |
+| Sammy    | 25000.00 | HR        |
+| varad    | 30000.00 | Admin     |
+| Ramesh   | 28000.00 | BD        |
+| Shubham  | 28000.00 | Sales     |
+| shubhman | 28000.00 | Sales     |
++----------+----------+-----------+
+6 rows in set (0.036 sec)
+
+MariaDB [company_db]> select distinct e.name,e.salary,d.dept_name
+    -> from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary = (select max(salary) from employee
+    -> where dept_id = e.dept_id) and name != 'shubham';
++----------+----------+-----------+
+| name     | salary   | dept_name |
++----------+----------+-----------+
+| Sandesh  | 27500.00 | IT        |
+| Sammy    | 25000.00 | HR        |
+| varad    | 30000.00 | Admin     |
+| Ramesh   | 28000.00 | BD        |
+| shubhman | 28000.00 | Sales     |
++----------+----------+-----------+
+5 rows in set (0.024 sec)
+
+MariaDB [company_db]> select distinct e.name,e.salary,d.dept_name
+    -> from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary > (select avg(Salary) from employee);
++----------+----------+-----------+
+| name     | salary   | dept_name |
++----------+----------+-----------+
+| Sandesh  | 27500.00 | IT        |
+| varad    | 30000.00 | Admin     |
+| Ramesh   | 28000.00 | BD        |
+| Shubham  | 28000.00 | Sales     |
+| shubhman | 28000.00 | Sales     |
++----------+----------+-----------+
+5 rows in set (0.020 sec)
+
+MariaDB [company_db]> select * from department
+    -> where dept_id not in (select distinct dept_id from employee);
++---------+------------+
+| dept_id | dept_name  |
++---------+------------+
+|      10 | networking |
++---------+------------+
+1 row in set (0.022 sec)
+
+MariaDB [company_db]> select * from employee
+    -> order by salary desc
+    -> limit ,;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 3
+MariaDB [company_db]> select * from employee
+    -> order by salary desc
+    -> limit 1,1;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+1 row in set (0.025 sec)
+
+MariaDB [company_db]> select max(salary) from employee
+    -> where salary > (select max(salary) from employee);
++-------------+
+| max(salary) |
++-------------+
+|        NULL |
++-------------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select dept_id,sum(salary) from employee
+    -> group by dept_id;
++---------+-------------+
+| dept_id | sum(salary) |
++---------+-------------+
+|       1 |    25000.00 |
+|       2 |    42000.00 |
+|       3 |    27500.00 |
+|       4 |    56000.00 |
+|       5 |    28000.00 |
++---------+-------------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select dept_id,sum(salary) from employee
+    -> group by dept_id
+    -> order by sum(salary) desc limit 1;
++---------+-------------+
+| dept_id | sum(salary) |
++---------+-------------+
+|       4 |    56000.00 |
++---------+-------------+
+1 row in set (0.044 sec)
