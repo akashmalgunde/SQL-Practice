@@ -1,0 +1,352 @@
+Question 1 — Above Dept Avg + Recent Join
+
+Display employees who:
+
+earn more than their department average
+
+AND joined after 2022-01-01
+
+Question 2 — Lowest Paid Employee Per Department
+
+Display the lowest paid employee in each department.
+
+Question 3 — Departments Where Max Salary > 80,000
+
+Display department names where the highest salary is greater than 80,000.
+
+Question 4 — Employees Not Highest in Their Department
+
+Display employees who are NOT the highest paid in their department.
+
+(Reverse logic thinking)
+
+Question 5 — Department Salary Spread
+
+Display department name and:
+
+maximum salary
+
+minimum salary
+
+difference between them (salary spread)
+
+Question 6 — Employees With Same Salary As Someone Else
+
+Display employees whose salary matches at least one other employee.
+
+(Hint: self comparison logic)
+
+Question 7 — Departments With Exactly 3 Employees
+
+Display department names having exactly 3 employees.
+
+Question 8 — Employees Earning Between Dept Avg and Dept Max
+
+Display employees whose salary is:
+
+greater than department average
+
+less than department maximum
+
+Question 9 — Third Highest Salary In Company
+
+Without using LIMIT.
+
+Question 10 — Employees Working In Department With Highest Average Salary
+
+Step thinking:
+
+Find department with highest average salary
+
+Show employees from that department
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Microsoft Windows [Version 10.0.19045.6466]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\xampp\mysql\bin>mysql.exe -u root
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 15
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> use company_db;
+Database changed
+MariaDB [company_db]> show tables;
++----------------------+
+| Tables_in_company_db |
++----------------------+
+| department           |
+| employee             |
++----------------------+
+2 rows in set (0.104 sec)
+
+MariaDB [company_db]> desc department;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| dept_id   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| dept_name | varchar(50) | NO   | UNI | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+2 rows in set (0.308 sec)
+
+MariaDB [company_db]> desc employee;
++---------+-------------+------+-----+---------+----------------+
+| Field   | Type        | Null | Key | Default | Extra          |
++---------+-------------+------+-----+---------+----------------+
+| eid     | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name    | varchar(20) | YES  | UNI | NULL    |                |
+| salary  | float(7,2)  | YES  |     | NULL    |                |
+| d_date  | date        | YES  |     | NULL    |                |
+| dept_id | int(11)     | YES  | MUL | NULL    |                |
++---------+-------------+------+-----+---------+----------------+
+5 rows in set (0.016 sec)
+
+MariaDB [company_db]> select * from employee e
+    -> where salary >
+    -> (select avg(salary from employee
+    -> where ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from employee
+where' at line 3
+MariaDB [company_db]> select * from employee e
+    -> where salary >
+    -> (select avg(salary) from employee
+    -> where dept_id = e.dept_id);
++-----+-------+----------+------------+---------+
+| eid | name  | salary   | d_date     | dept_id |
++-----+-------+----------+------------+---------+
+|   5 | varad | 30000.00 | 2026-02-20 |       2 |
++-----+-------+----------+------------+---------+
+1 row in set (0.068 sec)
+
+MariaDB [company_db]> select * from employee e
+    -> where salary <
+    -> (select avg(salary) from employee
+    -> where dept_id = e.dept_id);
++-----+--------+----------+------------+---------+
+| eid | name   | salary   | d_date     | dept_id |
++-----+--------+----------+------------+---------+
+|   3 | Haresh | 12000.00 | 2026-02-19 |       2 |
++-----+--------+----------+------------+---------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee e
+    -> where salary <
+    -> (select avg(salary) from employee
+    -> where dept_id = e.dept_id) and d_date > '2022-01-01';
++-----+--------+----------+------------+---------+
+| eid | name   | salary   | d_date     | dept_id |
++-----+--------+----------+------------+---------+
+|   3 | Haresh | 12000.00 | 2026-02-19 |       2 |
++-----+--------+----------+------------+---------+
+1 row in set (0.001 sec)
+
+MariaDB [company_db]> select dept_id,min(salary) from employee
+    -> group by dept_id;
++---------+-------------+
+| dept_id | min(salary) |
++---------+-------------+
+|       1 |    25000.00 |
+|       2 |    12000.00 |
+|       3 |    27500.00 |
+|       4 |    28000.00 |
+|       5 |    28000.00 |
++---------+-------------+
+5 rows in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary in
+    -> (select min(salary) from employee
+    -> group by dept_id);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+6 rows in set (0.002 sec)
+
+MariaDB [company_db]> select * from emloyee
+    -> where salary <
+    -> (select max(salary) from employee
+    -> where dept_id = employee.dept_id);
+ERROR 1146 (42S02): Table 'company_db.emloyee' doesn't exist
+MariaDB [company_db]> select * from emloyee
+    -> where salary <
+    -> (select max(salary) from employee
+    -> where dept_id = employee.dept_id);
+ERROR 1146 (42S02): Table 'company_db.emloyee' doesn't exist
+MariaDB [company_db]> select * from employee
+    ->
+    -> where salary <
+    -> (select max(salary) from employee
+    -> where dept_id = employee.dept_id);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+6 rows in set (0.000 sec)
+
+MariaDB [company_db]> select d.dept_name,min(salary),
+    -> max(salary),max(salary)-min(salary) as 'difference in salary'
+    -> from employee
+    -> e inner join department d
+    -> on e.dept_id = d.dept_id
+    -> group by e.dept_id;
++-----------+-------------+-------------+----------------------+
+| dept_name | min(salary) | max(salary) | difference in salary |
++-----------+-------------+-------------+----------------------+
+| HR        |    25000.00 |    25000.00 |                 0.00 |
+| Admin     |    12000.00 |    30000.00 |             18000.00 |
+| IT        |    27500.00 |    27500.00 |                 0.00 |
+| Sales     |    28000.00 |    28000.00 |                 0.00 |
+| BD        |    28000.00 |    28000.00 |                 0.00 |
++-----------+-------------+-------------+----------------------+
+5 rows in set (0.003 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary in (select salary from employee);
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary = (select salary from employee);
+ERROR 1242 (21000): Subquery returns more than 1 row
+MariaDB [company_db]> select e1.* from employee
+    -> e1
+    -> inner join employee e2
+    -> on e1.salary = e2.salary;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+13 rows in set (0.003 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where salary = (select salary from employee);
+ERROR 1242 (21000): Subquery returns more than 1 row
+MariaDB [company_db]> select e1.* from employee
+    -> e1
+    -> inner join employee e2
+    -> on e1.salary = e2.salary
+    -> and e1.eid <> e2.eid;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+6 rows in set (0.001 sec)
+
+MariaDB [company_db]> select * from employee
+    -> where date_diff(curdate(),d_date)/365 >= 2;
+ERROR 1305 (42000): FUNCTION company_db.date_diff does not exist
+MariaDB [company_db]> select * from employee
+    -> where datediff(curdate(),d_date)/365 >= 2;
+Empty set (0.000 sec)
+
+MariaDB [company_db]> select * from employee;
++-----+----------+----------+------------+---------+
+| eid | name     | salary   | d_date     | dept_id |
++-----+----------+----------+------------+---------+
+|   1 | Sandesh  | 27500.00 | 2025-02-12 |       3 |
+|   2 | Sammy    | 25000.00 | 2025-02-12 |       1 |
+|   3 | Haresh   | 12000.00 | 2026-02-19 |       2 |
+|   5 | varad    | 30000.00 | 2026-02-20 |       2 |
+|  20 | Ramesh   | 28000.00 | 2025-02-12 |       5 |
+|  25 | Shubham  | 28000.00 | 2025-02-12 |       4 |
+|  28 | shubhman | 28000.00 | 2025-02-12 |       4 |
++-----+----------+----------+------------+---------+
+7 rows in set (0.000 sec)
+
+MariaDB [company_db]> update employee
+    -> set d_date = '2023-01-01'
+    -> where dept_id = 2;
+Query OK, 2 rows affected (0.060 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+MariaDB [company_db]> select * from employee
+    -> where datediff(curdate(),d_date)/365 >= 2;
++-----+--------+----------+------------+---------+
+| eid | name   | salary   | d_date     | dept_id |
++-----+--------+----------+------------+---------+
+|   3 | Haresh | 12000.00 | 2023-01-01 |       2 |
+|   5 | varad  | 30000.00 | 2023-01-01 |       2 |
++-----+--------+----------+------------+---------+
+2 rows in set (0.000 sec)
+
+MariaDB [company_db]> select d.dept_name,e.name,e.salary
+    -> from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary = (select max(salary) from employee
+    -> where dept_id = e.dept_id);
++-----------+----------+----------+
+| dept_name | name     | salary   |
++-----------+----------+----------+
+| IT        | Sandesh  | 27500.00 |
+| HR        | Sammy    | 25000.00 |
+| Admin     | varad    | 30000.00 |
+| BD        | Ramesh   | 28000.00 |
+| Sales     | Shubham  | 28000.00 |
+| Sales     | shubhman | 28000.00 |
++-----------+----------+----------+
+6 rows in set (0.001 sec)
+
+MariaDB [company_db]> select d.dept_name,e.name,e.salary
+    -> from employee e
+    -> inner join department d
+    -> on e.dept_id = d.dept_id
+    -> where salary = (select max(salary) from employee
+    -> where dept_id = dept_id);
++-----------+-------+----------+
+| dept_name | name  | salary   |
++-----------+-------+----------+
+| Admin     | varad | 30000.00 |
++-----------+-------+----------+
+1 row in set (0.001 sec)
